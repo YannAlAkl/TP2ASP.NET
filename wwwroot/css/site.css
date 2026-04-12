@@ -1,31 +1,337 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+    color: var(--bs-secondary-color);
+    text-align: end;
 }
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+    text-align: start;
+}
+
+/* ?? Auth Card ?? */
+.auth-wrapper {
+    min-height: calc(100vh - 160px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: #ffffff;
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10), 0 1.5px 6px rgba(0, 0, 0, 0.06);
+    padding: 2.5rem 2.25rem 2rem;
+}
+
+    .auth-card h1 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 0.25rem;
+    }
+
+    .auth-card .auth-subtitle {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .auth-card .form-floating {
+        margin-bottom: 1rem;
+    }
+
+    .auth-card .form-control {
+        border-radius: 0.6rem;
+        border-color: #dee2e6;
+        background-color: #f8f9fa;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+        .auth-card .form-control:focus {
+            background-color: #fff;
+            border-color: #258cfb;
+        }
+
+    .auth-card .btn-primary {
+        background: linear-gradient(135deg, #258cfb 0%, #1a6fd4 100%);
+        border: none;
+        border-radius: 0.6rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        transition: opacity 0.2s, transform 0.15s;
+    }
+
+        .auth-card .btn-primary:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+    .auth-card .auth-links {
+        margin-top: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        font-size: 0.875rem;
+    }
+
+        .auth-card .auth-links a {
+            color: #258cfb;
+            text-decoration: none;
+        }
+
+            .auth-card .auth-links a:hover {
+                text-decoration: underline;
+            }
+
+    .auth-card .form-check-label {
+        font-size: 0.875rem;
+        color: #495057;
+    }
+
+    .auth-card .text-danger {
+        font-size: 0.8rem;
+    }
+
+/* ?? Header ?? */
+.site-header {
+    background-color: #0d1117;
+    border-bottom: none;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+    .site-header .navbar {
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
+    }
+
+.header-accent-bar {
+    height: 3px;
+    background: linear-gradient(90deg, #c0392b 0%, #e74c3c 50%, #c0392b 100%);
+}
+
+/* Logo */
+.brand-logo-wrapper {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 0 0 2px #e74c3c, 0 0 12px rgba(231, 76, 60, 0.5);
+    flex-shrink: 0;
+    transition: box-shadow 0.3s;
+}
+
+.navbar-brand:hover .brand-logo-wrapper {
+    box-shadow: 0 0 0 2px #e74c3c, 0 0 20px rgba(231, 76, 60, 0.75);
+}
+
+.brand-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    scale: 1.1;
+}
+
+.brand-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.01em;
+}
+
+.brand-accent {
+    color: #e74c3c;
+}
+
+/* Nav pills */
+.nav-pill {
+    color: #d0d6e0 !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.4rem 1rem !important;
+    border-radius: 20px;
+    transition: background 0.2s, color 0.2s;
+}
+
+    .nav-pill:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff !important;
+    }
+
+/* Bouton S'inscrire */
+.btn-accent {
+    background: #e74c3c;
+    color: #ffffff !important;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.4rem 1.2rem;
+    border: none;
+    transition: background 0.2s, transform 0.15s;
+    text-decoration: none;
+}
+
+    .btn-accent:hover {
+        background: #c0392b;
+        transform: translateY(-1px);
+        color: #ffffff !important;
+    }
+
+/* Footer */
+.site-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    background: #0d1117;
+    color: #6c757d;
+    font-size: 0.85rem;
+    border-top: 1px solid #1e2530;
+}
+
+    .site-footer a {
+        color: #e74c3c;
+        text-decoration: none;
+    }
+
+        .site-footer a:hover {
+            text-decoration: underline;
+        }
+
+/* ?? Home Page ?? */
+.text-accent {
+    color: #e74c3c;
+}
+
+/* -- Vue non connectée (hero) -- */
+.home-hero {
+    padding: 3rem 0 2rem;
+}
+
+.home-hero-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #1a1a2e;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+.home-hero-sub {
+    font-size: 1.05rem;
+    color: #6c757d;
+    max-width: 580px;
+    margin-bottom: 2rem;
+}
+
+/* ===== HOME CARDS AMÉLIORÉES ===== */
+.home-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.75rem 1.5rem;
+    text-align: center;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+    .home-card:hover {
+        transform: translateY(-6px) scale(1.01);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+    }
+
+    .home-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 4px;
+        width: 100%;
+        background: #e74c3c;
+    }
+
+.home-card-icon {
+    font-size: 2.6rem;
+    margin-bottom: 0.75rem;
+    transition: transform 0.3s;
+}
+
+.home-card:hover .home-card-icon {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.home-card h5 {
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 0.5rem;
+}
+
+.home-card p {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+}
+
+.btn-card {
+    background: #e74c3c;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    border-radius: 2rem;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+}
+
+    .btn-card:hover {
+        background: #c0392b;
+        transform: translateY(-1px);
+        color: #fff;
+    }
+
+/* Couleurs par sport */
+.home-card.soccer::before {
+    background: #28a745;
+}
+
+.home-card.basketball::before {
+    background: #fd7e14;
+}
+
+.home-card.volleyball::before {
+    background: #6f42c1;
 }

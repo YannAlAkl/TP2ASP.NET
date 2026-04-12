@@ -1,5 +1,9 @@
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
+using Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data;
 using Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models;
 
 namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
@@ -7,15 +11,18 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext context )
         {
-            _logger = logger;
+         
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult>  Index()
         {
-            return View();
+            var categories = await _context.Categories.Include(s => s.Subjects).ToListAsync();
+            return View(categories);
         }
 
         public IActionResult Privacy()

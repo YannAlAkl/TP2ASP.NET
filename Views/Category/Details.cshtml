@@ -1,0 +1,52 @@
+﻿@model Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.Category
+
+@{
+    ViewData["Title"] = "Details";
+}
+<h1>@Html.DisplayFor(model => model.Name)</h1>
+<div class="forum-container">
+    <table class="table forum-table">
+        <thead>
+            <tr class="forum-header">
+                <th>SUJET</th>
+                <th class="text-center">MESSAGES</th>
+                <th class="text-center">VUES</th>
+                <th>DERNIÈRE RÉPONSE</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Subjects != null && Model.Subjects.Any())
+            {
+                @foreach (var subject in Model.Subjects)
+                {
+                    <tr>
+                        <td>
+                            <div class="subject-title">
+                                <strong>@subject.Title</strong>
+                                @if (subject.CreatedAt > DateTime.Now.AddDays(-2))
+                                {
+                                    <span class="badge bg-success">Nouveau</span>
+                                }
+                            </div>
+                            <small class="text-muted">
+                                par @(subject.User?.UserName ?? "Anonyme") - @subject.CreatedAt.ToString("d MMM yyyy")
+                            </small>
+                        </td>
+                        <td class="text-center align-middle">24</td> @* Données statiques pour l'exemple *@
+                        <td class="text-center align-middle">812</td>
+                        <td class="align-middle">
+                            <div><strong>HabsForever</strong></div>
+                            <small class="text-muted">il y a 12 min</small>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center">Aucun sujet disponible pour cette catégorie.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
