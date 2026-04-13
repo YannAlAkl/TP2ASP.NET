@@ -10,22 +10,23 @@ using Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models;
 
 namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 {
-    public class CategoryController : Controller
+    public class SubjectController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public CategoryController(ApplicationDbContext context)
+        public SubjectController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: category
+        // GET: Subjects
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            var applicationDbContext = _context.Subjects.Include(s => s.Category).Include(s => s.User);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Categories/Details/5
+        // GET: Subjects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,45 +34,46 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 return NotFound();
             }
 
-            // ✅ Retourne un seul Category filtré par id
-            var detailCategory = await _context.Categories
-                .Include(s => s.Subjects)
-                    .ThenInclude(m => m.Messages)
-                    .ThenInclude(m => m.User)
-                .FirstOrDefaultAsync(c => c.Id == id);
-            detailCategory.Subjects = detailCategory.Subjects.Where(s => !s.IsDeleted).ToList();
-
-            if (detailCategory == null)
+            var subject = await _context.Subjects
+                .Include(s => s.Category)
+                .Include(s => s.User)
+                .Include(s => s.Messages)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (subject == null)
             {
                 return NotFound();
             }
 
-            return View(detailCategory);
+            return View(subject);
         }
 
-        // GET: Categories/Create
+        // GET: Subjects/Create
         public IActionResult Create()
         {
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
-        // POST: Categories/Create
+        // POST: Subjects/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,IsDeleted")] Category category)
+        public async Task<IActionResult> Create([Bind("Id,Title,Content,CreatedAt,ViewCount,IsDeleted,CategoryId,UserId")] Subject subject)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
+                _context.Add(subject);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", subject.CategoryId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", subject.UserId);
+            return View(subject);
         }
 
-        // GET: Categories/Edit/5
+        // GET: Subjects/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -79,22 +81,24 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
+            var subject = await _context.Subjects.FindAsync(id);
+            if (subject == null)
             {
                 return NotFound();
             }
-            return View(category);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", subject.CategoryId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", subject.UserId);
+            return View(subject);
         }
 
-        // POST: Categories/Edit/5
+        // POST: Subjects/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,IsDeleted")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,CreatedAt,ViewCount,IsDeleted,CategoryId,UserId")] Subject subject)
         {
-            if (id != category.Id)
+            if (id != subject.Id)
             {
                 return NotFound();
             }
@@ -103,12 +107,12 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             {
                 try
                 {
-                    _context.Update(category);
+                    _context.Update(subject);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.Id))
+                    if (!SubjectExists(subject.Id))
                     {
                         return NotFound();
                     }
@@ -119,10 +123,12 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", subject.CategoryId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", subject.UserId);
+            return View(subject);
         }
 
-        // GET: Categories/Delete/5
+        // GET: Subjects/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -130,34 +136,37 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
+            var subject = await _context.Subjects
+                .Include(s => s.Category)
+                .Include(s => s.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+            if (subject == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            return View(subject);
         }
 
-        // POST: Categories/Delete/5
+        // POST: Subjects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            var subject = await _context.Subjects.FindAsync(id);
+            if (subject != null)
             {
-                _context.Categories.Remove(category);
+            subject.IsDeleted = true;
+            subject.Messages.All(m => m.IsDeleted = true);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(int id)
+        private bool SubjectExists(int id)
         {
-            return _context.Categories.Any(e => e.Id == id);
+            return _context.Subjects.Any(e => e.Id == id);
         }
     }
 }

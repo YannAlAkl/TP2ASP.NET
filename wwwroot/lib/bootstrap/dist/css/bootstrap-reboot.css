@@ -270,7 +270,8 @@ p {
   margin-bottom: 1rem;
 }
 
-abbr[title] {
+abbr[
+    ] {
   -webkit-text-decoration: underline dotted;
   text-decoration: underline dotted;
   cursor: help;

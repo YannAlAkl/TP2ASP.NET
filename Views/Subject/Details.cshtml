@@ -1,0 +1,50 @@
+﻿@model Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.Subject
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container">
+    <div class="subject-header">
+        <h1>@Html.DisplayFor(model => model.Title)</h1>
+        <div class="subject-meta">
+            <span class="meta-item"><i class="bi bi-chat-dots"></i> @ViewBag.MessageCount messages</span>
+            <span class="meta-item text-danger"><i class="bi bi-eye"></i> @Html.DisplayFor(model => model.ViewCount) vues</span>
+            <span class="meta-item">par <strong>@(Model.User?.UserName ?? "Utilisateur")</strong></span>
+            <span class="meta-item">@Model.CreatedAt.ToString("dd MMM. yyyy")</span>
+        </div>
+    </div>
+
+    <div class="post-container">
+        <div class="post-row">
+            <div class="post-author-sidebar">
+                <div class="author-avatar">
+                    @Model.User?.UserName.Substring(0, 2).ToUpper()
+                </div>
+                <h6 class="author-name">@Model.User?.UserName</h6>
+                <span class="badge bg-success">Membre</span>
+                <p class="author-stats">@ViewBag.UserPostCount messages</p>
+            </div>
+
+            <div class="post-content-area">
+                <div class="post-date">
+                    #1 — @Model.CreatedAt.ToString("dd MMM. yyyy 'à' HH'h'mm")
+                </div>
+
+                <div class="post-text">
+                    @Html.DisplayFor(model => model.Content)
+                </div>
+
+                <div class="post-actions">
+                    <button type="button" class="btn-card">Citer</button>
+                    <button type="button" class="btn-card">J'aime</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn-warning-custom">Modifier le sujet</a>
+        <a asp-action="Index" class="btn-accent">Retour au forum</a>
+    </div>
+</div>
