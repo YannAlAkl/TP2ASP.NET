@@ -6,7 +6,6 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models
     public class Subject
 
     {
-
         public int Id { get; set; }
 
         [Required]

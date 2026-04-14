@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,11 +13,13 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 {
     public class MessagesController : Controller
     {
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _context;
 
-        public MessagesController(ApplicationDbContext context)
+        public MessagesController(ApplicationDbContext context , UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Messages
@@ -61,18 +64,20 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Content,CreatedAt,IsDeleted,SubjectId,UserId")] Message message)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(message);
-                await _context.SaveChangesAsync();
-                TempData["LastMessage"] = message.Content;
-                return RedirectToAction("Details", "Subject", new { id = message.SubjectId });
-            }
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Title", message.SubjectId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", message.UserId);
-            return View(message);
-        }
 
+            var newMessage = new Message
+            {
+                Content = message.Content,
+                CreatedAt = message.CreatedAt,
+                IsDeleted = message.IsDeleted,
+                SubjectId = message.SubjectId,
+                UserId = _userManager.GetUserId(User)
+            };
+            
+            _context.Messages.Add(newMessage);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Details", "Subject", new { id = message.SubjectId });
+        }
         // GET: Messages/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

@@ -27,33 +27,32 @@
                 <p class="author-stats">@ViewBag.UserPostCount messages</p>
             </div>
 
-            <div class="post-content-area">
-                <div class="post-date">
-                    #1 — @Model.CreatedAt.ToString("dd MMM. yyyy 'à' HH'h'mm")
+            @foreach (var message in Model.Messages)
+            {
+
+                <div class="post-content-area">
+                    <div class="post-date">
+                    #1 — @message.CreatedAt.ToString("dd MMM. yyyy 'à' HH'h'mm")
                 </div>
 
                 <div class="post-text">
-                    @Html.DisplayFor(model => model.Content)
+                    @message.Content
                 </div>
 
                 <div class="post-actions">
                     <button type="button" class="btn-card">Citer</button>
                     <button type="button" class="btn-card">J'aime</button>
                 </div>
+                
             </div>
+            }
         </div>
     </div>
-    @if (TempData["LastMessage"] != null)
-    {
-        <div class="alert alert-success mt-3">
-
-            <p>@TempData["LastMessage"]</p>
-        </div>
-    }
-    @* --- Section de Réponse --- *@
+    
     <div class="reply-section mt-4">
         @if (User.Identity.IsAuthenticated)
         {
+
                 <h5>Répondre au sujet</h5>
                 <form method="post" asp-controller="Messages" asp-action="Create">
                     <input type="hidden" name="SubjectId" value="@Model.Id" />
