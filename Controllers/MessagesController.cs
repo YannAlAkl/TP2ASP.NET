@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,22 +10,23 @@ using Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models;
 
 namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 {
-    public class CategoryController : Controller
+    public class MessagesController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public CategoryController(ApplicationDbContext context)
+        public MessagesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: category
+        // GET: Messages
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            var applicationDbContext = _context.Messages.Include(m => m.Subject).Include(m => m.User);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Categories/Details/5
+        // GET: Messages/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,49 +34,46 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 return NotFound();
             }
 
-            // ✅ Retourne un seul Category filtré par id
-            var detailCategory = await _context.Categories
-                .Include(s => s.Subjects)
-                    .ThenInclude(m => m.Messages)
-                    .ThenInclude(m => m.User)
-                .FirstOrDefaultAsync(c => c.Id == id);
-            detailCategory.Subjects = detailCategory.Subjects.Where(s => !s.IsDeleted).ToList();
-
-            if (detailCategory == null)
+            var message = await _context.Messages
+                .Include(m => m.Subject)
+                .Include(m => m.User)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (message == null)
             {
                 return NotFound();
             }
 
-            return View(detailCategory);
+            return View(message);
         }
 
-        // GET: Categories/Create
-
-        [Authorize]
+        // GET: Messages/Create
         public IActionResult Create()
         {
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Title");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
-        // POST: Categories/Create
+        // POST: Messages/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,IsDeleted")] Category category)
+        public async Task<IActionResult> Create([Bind("Id,Content,CreatedAt,IsDeleted,SubjectId,UserId")] Message message)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
+                _context.Add(message);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                TempData["LastMessage"] = message.Content;
+                return RedirectToAction("Details", "Subject", new { id = message.SubjectId });
             }
-            return View(category);
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Title", message.SubjectId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", message.UserId);
+            return View(message);
         }
 
-        // GET: Categories/Edit/5
-        [Authorize]
+        // GET: Messages/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -84,23 +81,24 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
+            var message = await _context.Messages.FindAsync(id);
+            if (message == null)
             {
                 return NotFound();
             }
-            return View(category);
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Title", message.SubjectId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", message.UserId);
+            return View(message);
         }
 
-        // POST: Categories/Edit/5
+        // POST: Messages/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,IsDeleted")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Content,CreatedAt,IsDeleted,SubjectId,UserId")] Message message)
         {
-            if (id != category.Id)
+            if (id != message.Id)
             {
                 return NotFound();
             }
@@ -109,12 +107,12 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             {
                 try
                 {
-                    _context.Update(category);
+                    _context.Update(message);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.Id))
+                    if (!MessageExists(message.Id))
                     {
                         return NotFound();
                     }
@@ -125,11 +123,12 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Title", message.SubjectId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", message.UserId);
+            return View(message);
         }
 
-        // GET: Categories/Delete/5
-        [Authorize]
+        // GET: Messages/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -137,35 +136,36 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
+            var message = await _context.Messages
+                .Include(m => m.Subject)
+                .Include(m => m.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+            if (message == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            return View(message);
         }
 
-        // POST: Categories/Delete/5
-        [Authorize]
+        // POST: Messages/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            var message = await _context.Messages.FindAsync(id);
+            if (message != null)
             {
-                _context.Categories.Remove(category);
+                _context.Messages.Remove(message);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(int id)
+        private bool MessageExists(int id)
         {
-            return _context.Categories.Any(e => e.Id == id);
+            return _context.Messages.Any(e => e.Id == id);
         }
     }
 }

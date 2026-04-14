@@ -1,4 +1,5 @@
 ﻿@model Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.Subject
+<link href="~/css/site.css" rel="stylesheet" />
 
 @{
     ViewData["Title"] = Model.Title;
@@ -19,7 +20,7 @@
         <div class="post-row">
             <div class="post-author-sidebar">
                 <div class="author-avatar">
-                    @Model.User?.UserName.Substring(0, 2).ToUpper()
+                    @(Model.User?.UserName?.Substring(0, 2).ToUpper() ?? "??")
                 </div>
                 <h6 class="author-name">@Model.User?.UserName</h6>
                 <span class="badge bg-success">Membre</span>
@@ -42,9 +43,46 @@
             </div>
         </div>
     </div>
+    @if (TempData["LastMessage"] != null)
+    {
+        <div class="alert alert-success mt-3">
 
+            <p>@TempData["LastMessage"]</p>
+        </div>
+    }
+    @* --- Section de Réponse --- *@
+    <div class="reply-section mt-4">
+        @if (User.Identity.IsAuthenticated)
+        {
+                <h5>Répondre au sujet</h5>
+                <form method="post" asp-controller="Messages" asp-action="Create">
+                    <input type="hidden" name="SubjectId" value="@Model.Id" />
+                    
+                    <div class="mb-3">
+                        <textarea name="Content" class="form-control" rows="4" placeholder="Écrivez votre message ici..." required></textarea>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success">Envoyer votre message</button>
+
+                </form>
+        }
+        else
+        {
+            <div class="alert alert-info d-flex justify-content-between align-items-center">
+                <span>Vous devez être connecté pour participer à la discussion.</span>
+                <a>
+                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary shadow-sm">deleted</a>
+
+                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary shadow-sm">Se connecter</a>
+                </a>
+            </div>
+        }
+    </div>
     <div class="mt-4 d-flex gap-2">
-        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn-warning-custom">Modifier le sujet</a>
+        @if (User.Identity.IsAuthenticated && (User.Identity.Name == Model.User?.UserName))
+        {
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn-warning-custom">Modifier le sujet</a>
+        }
         <a asp-action="Index" class="btn-accent">Retour au forum</a>
     </div>
 </div>

@@ -44,6 +44,8 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             {
                 return NotFound();
             }
+            
+            RedirectToAction("Details", "Subject", new { id = subject.Id });
 
             return View(subject);
         }
@@ -68,7 +70,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             {
                 _context.Add(subject);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Subject", new { id = subject.Id });
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", subject.CategoryId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", subject.UserId);

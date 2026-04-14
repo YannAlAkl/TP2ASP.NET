@@ -1,6 +1,8 @@
 ﻿@model Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.Category
+@using Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models
+
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Détails - " + Model.Name;
 }
 
 <div class="container mt-4">
@@ -10,14 +12,16 @@
         <p>
             @if (User.Identity.IsAuthenticated)
             {
-                <a asp-controller="Subject" asp-action="Create" class="btn btn-primary shadow-sm">
+                @* Bouton normal pour utilisateur connecté *@
+                <a asp-controller="Subject" asp-action="Create" asp-route-categoryId="@Model.Id" class="btn btn-primary shadow-sm">
                     <i class="bi bi-plus-circle"></i> Ajouter un sujet
                 </a>
             }
             else
             {
-                
-                    <i class="bi bi-box-arrow-in-right"></i> Se connecter pour ajouter
+                @* Même bouton visuellement, mais redirige vers Login *@
+                <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary shadow-sm">
+                    <i class="bi bi-plus-circle"></i> Ajouter un sujet
                 </a>
             }
         </p>
@@ -48,39 +52,39 @@
                                 }
                             </div>
                             <small class="text-muted">
-                                par @(subject.User?.UserName ?? "Anonyme") • @subject.CreatedAt.ToString("d MMM yyyy")
+                                par @(subject.User?.UserName ?? "Anonyme")•@subject.CreatedAt.ToString("d MMM yyyy")
                             </small>
                         </td>
-                        <td class="text-center">@subject.Messages?.Count()</td>
+                        <td class="text-center">@(subject.Messages?.Count() ?? 0)</td>
                         <td class="text-center">@subject.ViewCount</td>
                         <td class="text-center">
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                                <div class="btn-group">
+                            <div class="btn-group">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    @* Actions réelles *@
                                     <a asp-controller="Subject" asp-action="Edit" asp-route-id="@subject.Id" class="btn btn-sm btn-outline-warning">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
                                     <a asp-controller="Subject" asp-action="Delete" asp-route-id="@subject.Id" class="btn btn-sm btn-outline-danger">
                                         <i class="bi bi-trash"></i>
                                     </a>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="btn-group">
-                                    
+                                }
+                                else
+                                {
+                                    @* Garde le crayon et la poubelle, mais redirection *@
+                                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-sm btn-outline-warning">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    
+                                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-sm btn-outline-danger">
                                         <i class="bi bi-trash"></i>
                                     </a>
-                                </div>
-                            }
+                                }
+                            </div>
                         </td>
                         <td>
                             @if (lastMsg != null)
                             {
-                                <div class="fw-bold text-truncate" style="max-width: 150px;">@lastMsg.User?.UserName</div>
+                                <div class="fw-bold text-truncate" style="max-width: 150px;">@(lastMsg.User?.UserName ?? "Anonyme")</div>
                                 <small class="text-muted">@GetRelativeTime(lastMsg.CreatedAt)</small>
                             }
                             else
@@ -101,6 +105,7 @@
         var ts = DateTime.Now - d;
         if (ts.TotalDays >= 1) return $"il y a {(int)ts.TotalDays} j";
         if (ts.TotalHours >= 1) return $"il y a {(int)ts.TotalHours} h";
-        return $"il y a {(int)ts.TotalMinutes} min";
+        if (ts.TotalMinutes >= 1) return $"il y a {(int)ts.TotalMinutes} min";
+        return "à l'instant";
     }
 }
