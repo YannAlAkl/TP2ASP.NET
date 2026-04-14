@@ -1,9 +1,13 @@
 ﻿@model Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.Subject
 <link href="~/css/site.css" rel="stylesheet" />
 
+
+
 @{
     ViewData["Title"] = Model.Title;
 }
+
+
 
 <div class="container">
     <div class="subject-header">
@@ -16,67 +20,76 @@
         </div>
     </div>
 
-    <div class="post-container">
-        <div class="post-row">
-            <div class="post-author-sidebar">
-                <div class="author-avatar">
-                    @(Model.User?.UserName?.Substring(0, 2).ToUpper() ?? "??")
-                </div>
-                <h6 class="author-name">@Model.User?.UserName</h6>
-                <span class="badge bg-success">Membre</span>
-                <p class="author-stats">@ViewBag.UserPostCount messages</p>
-            </div>
 
-            @foreach (var message in Model.Messages)
-            {
+
+    <div class="post-container">
+        @{
+            int postIndex = 1;
+        }
+        @foreach (var message in Model.Messages)
+        {
+            <div class="post-row">
+                <div class="post-author-sidebar">
+                    <div class="author-avatar">
+                        @(message.User?.UserName?.Substring(0, 2).ToUpper() ?? "??")
+                    </div>
+                    <h6 class="author-name">@message.User?.UserName</h6>
+                    <span class="badge bg-success">Membre</span>
+                    <p class="author-stats">@ViewBag.UserPostCount messages</p>
+                </div>
+
+
 
                 <div class="post-content-area">
                     <div class="post-date">
-                    #1 — @message.CreatedAt.ToString("dd MMM. yyyy 'à' HH'h'mm")
-                </div>
+                        #@postIndex — @message.CreatedAt.ToString("dd MMM. yyyy 'à' HH'h'mm")
+                    </div>
 
-                <div class="post-text">
-                    @message.Content
-                </div>
 
-                <div class="post-actions">
-                    <button type="button" class="btn-card">Citer</button>
-                    <button type="button" class="btn-card">J'aime</button>
+
+                    <div class="post-text">
+                        @message.Content
+                    </div>
+
+
+
+                    <div class="post-actions">
+                        <button type="button" class="btn-card">Citer</button>
+                        <button type="button" class="btn-card">J'aime</button>
+                    </div>
                 </div>
-                
             </div>
-            }
-        </div>
+            postIndex++;
+        }
     </div>
-    
+
+
+
     <div class="reply-section mt-4">
         @if (User.Identity.IsAuthenticated)
         {
-
-                <h5>Répondre au sujet</h5>
-                <form method="post" asp-controller="Messages" asp-action="Create">
-                    <input type="hidden" name="SubjectId" value="@Model.Id" />
-                    
-                    <div class="mb-3">
-                        <textarea name="Content" class="form-control" rows="4" placeholder="Écrivez votre message ici..." required></textarea>
-                    </div>
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-success">Envoyer votre message</button>
-
-                </form>
+            <h5>Répondre au sujet</h5>
+            <form method="post" asp-controller="Messages" asp-action="Create">
+                <input type="hidden" name="SubjectId" value="@Model.Id" />
+                <div class="mb-3">
+    <textarea name="Content" class="form-control" rows="4" placeholder="Écrivez votre message ici..." required></textarea>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success">Envoyer votre message</button>
+                </div>
+            </form>
         }
         else
         {
             <div class="alert alert-info d-flex justify-content-between align-items-center">
                 <span>Vous devez être connecté pour participer à la discussion.</span>
-                <a>
-                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary shadow-sm">deleted</a>
-
-                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary shadow-sm">Se connecter</a>
-                </a>
+                <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary shadow-sm">Se connecter</a>
             </div>
         }
     </div>
+
+
+
     <div class="mt-4 d-flex gap-2">
         @if (User.Identity.IsAuthenticated && (User.Identity.Name == Model.User?.UserName))
         {

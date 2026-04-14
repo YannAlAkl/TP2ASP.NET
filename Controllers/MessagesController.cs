@@ -172,5 +172,18 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
         {
             return _context.Messages.Any(e => e.Id == id);
         }
+
+        public async Task<IActionResult> LikeCount(int id)
+        {
+            var message = await _context.Messages.FirstOrDefaultAsync(m => m.Id == id);
+            if (message == null)
+            {
+                return NotFound();
+            }
+            message.LikeCount++;
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Details", "Subject", new { id = message.SubjectId });
+
+        }
     }
 }

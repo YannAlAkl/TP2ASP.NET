@@ -24,6 +24,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models
 
         public int CategoryId { get; set; }
 
+
         public Category? Category { get; set; }
 
         // FK vers Identity

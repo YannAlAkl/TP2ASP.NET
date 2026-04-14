@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data;
 
@@ -11,9 +12,11 @@ using Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data;
 namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414194101_ApplicationDb")]
+    partial class ApplicationDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -267,9 +270,6 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("LikeCount")
-                        .HasColumnType("int");
-
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
@@ -304,6 +304,9 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<int>("LikeCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()

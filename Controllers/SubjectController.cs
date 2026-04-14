@@ -44,7 +44,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             {
                 return NotFound();
             }
-            
+
             RedirectToAction("Details", "Subject", new { id = subject.Id });
 
             return View(subject);
@@ -164,8 +164,8 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             var subject = await _context.Subjects.FindAsync(id);
             if (subject != null)
             {
-            subject.IsDeleted = true;
-            subject.Messages.All(m => m.IsDeleted = true);
+                subject.IsDeleted = true;
+                subject.Messages.All(m => m.IsDeleted = true);
             }
 
             await _context.SaveChangesAsync();
@@ -176,5 +176,6 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
         {
             return _context.Subjects.Any(e => e.Id == id);
         }
+
     }
 }
