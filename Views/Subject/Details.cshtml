@@ -15,7 +15,7 @@
         <div class="subject-meta">
             <span class="meta-item"><i class="bi bi-chat-dots"></i> @ViewBag.MessageCount messages</span>
             <span class="meta-item text-danger"><i class="bi bi-eye"></i> @Html.DisplayFor(model => model.ViewCount) vues</span>
-            <span class="meta-item">par <strong>@(Model.User?.UserName ?? "Utilisateur")</strong></span>
+            <span class="meta-item">par <strong>@(Model.User?.Email ?? "Utilisateur")</strong></span>
             <span class="meta-item">@Model.CreatedAt.ToString("dd MMM. yyyy")</span>
         </div>
     </div>
@@ -31,9 +31,9 @@
             <div class="post-row">
                 <div class="post-author-sidebar">
                     <div class="author-avatar">
-                        @(message.User?.UserName?.Substring(0, 2).ToUpper() ?? "??")
+                        @(message.User?.Email?.Substring(0, 2).ToUpper() ?? "??")
                     </div>
-                    <h6 class="author-name">@message.User?.UserName</h6>
+                    <h6 class="author-name">@message.User?.Email</h6>
                     <span class="badge bg-success">Membre</span>
                     <p class="author-stats">@ViewBag.UserPostCount messages</p>
                 </div>
@@ -91,7 +91,7 @@
 
 
     <div class="mt-4 d-flex gap-2">
-        @if (User.Identity.IsAuthenticated && (User.Identity.Name == Model.User?.UserName))
+        @if (User.Identity.IsAuthenticated && (User.Identity.Name == Model.User?.Email))
         {
             <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn-warning-custom">Modifier le sujet</a>
         }
