@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models;
 
 namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data
 {
- public class ApplicationDbContext : IdentityDbContext
+ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
         internal readonly object Category;
 

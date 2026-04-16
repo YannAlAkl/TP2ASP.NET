@@ -12,7 +12,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// Identity + Roles
+// Identity + Roles (CORRECTION CS0411 : Ajout explicite des types)
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -21,16 +21,22 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
 
 // =========================
-// PUT IT HERE
+// INITIALISATION / SEEDING
 // =========================
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+
+    // Migration automatique avant le seeding
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    await context.Database.MigrateAsync();
+
     await SeedRolesAsync(services);
     await SeedAdminUserAsync(services);
 }
@@ -69,6 +75,7 @@ app.Run();
 // =========================
 static async Task SeedRolesAsync(IServiceProvider services)
 {
+    // CORRECTION : Spécification du type RoleManager
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
     string[] roles = { "Admin", "User" };
@@ -84,6 +91,7 @@ static async Task SeedRolesAsync(IServiceProvider services)
 
 static async Task SeedAdminUserAsync(IServiceProvider services)
 {
+    // CORRECTION : Spécification des types UserManager et RoleManager
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
@@ -91,7 +99,7 @@ static async Task SeedAdminUserAsync(IServiceProvider services)
     string adminEmail = "admin@forum.com";
     string adminPassword = "Admin123!";
 
-    var user = await userManager.FindByNameAsync(adminUserName);
+    var user = await userManager.FindByEmailAsync(adminEmail);
 
     if (user == null)
     {
@@ -108,6 +116,12 @@ static async Task SeedAdminUserAsync(IServiceProvider services)
         {
             throw new Exception("Impossible de créer l'utilisateur admin.");
         }
+    }
+    else
+    {
+        // Si l'utilisateur existe déjà, réinitialiser son mot de passe
+        var token = await userManager.GeneratePasswordResetTokenAsync(user);
+        await userManager.ResetPasswordAsync(user, token, adminPassword);
     }
 
     if (!await roleManager.RoleExistsAsync("Admin"))
