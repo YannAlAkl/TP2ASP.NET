@@ -10,7 +10,8 @@ using Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data;
 namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("00000000000000_CreateIdentitySchema")]
+    [Migration("00000000000000_Create
+        Schema")]
     partial class CreateIdentitySchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

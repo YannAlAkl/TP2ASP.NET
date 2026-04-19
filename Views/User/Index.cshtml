@@ -1,0 +1,59 @@
+﻿    @model IEnumerable<Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.ViewModels.UserStatsViewModel>
+
+    @{
+        ViewData["Title"] = "Liste des statistiques des utilisateurs";
+    }
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Username 
+            </th>
+            <th>
+                Email
+            </th>
+           <th>
+                Nombre de sujets créés
+            </th>
+            <th>
+                Nombre de messages créés
+           
+
+            <th>
+                 dernière activité
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model) {
+        <tr>
+            <td>
+                @user.UserName
+            </td>
+            <td>
+                @user.Email
+            </td>
+            <td>
+                    @user.SubjectCount
+            </td>
+            <td>
+                @user.MessageCount
+            </td>
+            <td>
+                    @user.LastActivity.ToString("dd-mm-yyyy-hh-mm");
+            </td>            
+            </tr>
+}
+    </tbody>
+
+
+
+
+
+
+
+
+
+ 
+
+

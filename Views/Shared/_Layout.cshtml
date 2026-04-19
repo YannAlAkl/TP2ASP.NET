@@ -36,6 +36,16 @@
                         <li class="nav-item">
                             <a class="nav-link nav-pill" asp-area="" asp-controller="Home" asp-action="Privacy">Confidentialité</a>
                         </li>
+                        @if(User.IsInRole("Admin")){
+                        <li class="nav-item">
+                            <a class="nav-link nav-pill" asp-area="" asp-controller="User" asp-action="Index">Utilisateurs</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Admin")){
+                        <li class="nav-item">
+                            <a class="nav-link nav-pill" asp-area="" asp-controller="User" asp-action="Create">Nouvelle Utilisateur</a>
+                        </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

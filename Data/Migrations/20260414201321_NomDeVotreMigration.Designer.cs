@@ -23,7 +23,14 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data.Migrations
                 .HasAnnotation("ProductVersion", "9.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.Use
+                
+                
+                
+                
+                
+                
+                Columns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
