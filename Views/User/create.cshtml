@@ -1,11 +1,12 @@
-﻿@model IEnumerable<Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.ViewModels.UserCredentials>
+﻿@model IEnumerable<Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.ViewModels.createUserViewModel>
 @{
     ViewData["Title"] = "Create";
 }
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-controller="User" asp-action="Create">Create New</a>
+
 </p>
-@foreach (var user in Model)
+@foreach (var user in Model.crea)
 {
     <form action="/" method="post">
         <h3>Nouvel utilisateur</h3>
@@ -26,14 +27,12 @@
         </div>
 
         <div>
-            <label for="status">Statut : @user.Status</label>
-            <select id="status" name="status">
-                <option value="user" selected="@(user.Status == "user")">Utilisateur standard</option>
-                <option value="admin" selected="@(user.Status == "admin")">Admin</option>
+            <label for="roles">Roles : @user.Role</label>
+            <select id="roles" name="Roles">
+                <option value="user" selected="@(user.Role == "user")">Utilisateur standard</option>
+                <option value="admin" selected="@(user.Role == "admin")">Admin</option>
             </select>
         </div>
-
-
 
         <button type="submit">Créer le compte</button>
     </form>

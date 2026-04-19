@@ -8,7 +8,7 @@ using Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data;
 
 #nullable disable
 
-namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data.Migrations
+namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot

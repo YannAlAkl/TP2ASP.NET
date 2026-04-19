@@ -77,7 +77,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult>	 Create(createUserViewModel vm)
 		{
-			var user = new IdentityUser { UserName = vm.Username, Email = vm.Email };
+			var user = new IdentityUser { UserName = vm.UserName, Email = vm.Email };
 				var result = await _userManager.CreateAsync(user, vm.Password);
 				if (result.Succeeded)
 				{
