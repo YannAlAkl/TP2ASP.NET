@@ -8,8 +8,9 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data
  public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
         internal readonly object Category;
+		internal readonly object MessageLikes;
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }

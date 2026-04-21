@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -70,32 +69,35 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 		{
 			return View();
 		}
+	[Authorize(Roles = "Admin")]
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	public async Task<ActionResult> Create(createUserViewModel vm)
+	{
+		if (!ModelState.IsValid)
+			return View(vm);
 
-		[Authorize(Roles = "Admin")]
-		// POST: UserController/Create
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<ActionResult>	 Create(createUserViewModel vm)
+		var user = new IdentityUser { UserName = vm.UserName, Email = vm.Email };
+		var result = await _userManager.CreateAsync(user, vm.Password);
+
+		if (!result.Succeeded)
 		{
-			var user = new IdentityUser { UserName = vm.UserName, Email = vm.Email };
-				var result = await _userManager.CreateAsync(user, vm.Password);
-				if (result.Succeeded)
-				{
-					return RedirectToAction(nameof(Index));
-				}
-				else
-				{
-					foreach (var error in result.Errors)
-					{
-						ModelState.AddModelError(string.Empty, error.Description);
-					}
-					return View(vm);
-			}
-
-			
-			
+			foreach (var error in result.Errors)
+				ModelState.AddModelError(string.Empty, error.Description);
+			return View(vm);
 		}
 
+		var roleResult = await _userManager.AddToRoleAsync(user, vm.Role);
+
+		if (!roleResult.Succeeded)
+		{
+			foreach (var error in roleResult.Errors)
+				ModelState.AddModelError(string.Empty, error.Description);
+			return View(vm);
+		}
+
+		return RedirectToAction(nameof(Index));
+	}
 		// GET: UserController/Edit/5
 		public ActionResult Edit(int id)
 		{

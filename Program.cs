@@ -24,24 +24,16 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
-
-
-// =========================
-// INITIALISATION / SEEDING
-// =========================
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    // Migration automatique avant le seeding
     var context = services.GetRequiredService<ApplicationDbContext>();
     await context.Database.MigrateAsync();
 
     await SeedRolesAsync(services);
     await SeedAdminUserAsync(services);
 }
-
-
 // Middleware / pipeline
 if (app.Environment.IsDevelopment())
 {

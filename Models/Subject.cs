@@ -20,16 +20,19 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models
 
         public int ViewCount { get; set; } = 0;
 
-        public bool IsDeleted { get; set; } = false;
+        public int LikeCount { get; set; } = 0;
+
+		public bool IsDeleted { get; set; } = false;
 
         public int CategoryId { get; set; }
 
 
-        public Category? Category { get; set; }
+        public Category? Category { get; set; } = null;
+		public string LikedByUserIds { get; set; } = string.Empty;
 
-        // FK vers Identity
+		// FK vers Identity
 
-        public string? UserId { get; set; }
+		public string? UserId { get; set; }
 
         public IdentityUser? User { get; set; }
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -181,8 +181,10 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Migrations
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ViewCount = table.Column<int>(type: "int", nullable: false),
+                    LikeCount = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
+                    LikedByUserIds = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -213,7 +215,8 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Migrations
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     SubjectId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    LikeCount = table.Column<int>(type: "int", nullable: false)
+                    LikeCount = table.Column<int>(type: "int", nullable: false),
+                    LikedByUserIds = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

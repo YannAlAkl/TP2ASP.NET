@@ -19,6 +19,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             _context = context;
         }
 
+
         public async Task<IActionResult>  Index()
         {
             var categories = await _context.Categories.Include(s => s.Subjects).ToListAsync();

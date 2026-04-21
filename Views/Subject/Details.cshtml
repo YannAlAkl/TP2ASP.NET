@@ -1,118 +1,127 @@
-﻿    @model Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.Subject
-    <link href="~/css/site.css" rel="stylesheet" />
- 
-    @{
-        ViewData["Title"] = Model.Title;
-        var userPostCounts = ViewBag.UserPostCounts as Dictionary<string, int> ?? new Dictionary<string, int>();
-    }
- 
-    <div class="container">
- 
-        <div class="subject-header">
-    <h1>@Html.DisplayFor(model => model.Title)</h1>
-    <div class="subject-meta">
-    <span class="meta-item">
-    <i class="bi bi-chat-dots"></i> @ViewBag.MessageCount messages
-    </span>
-    <span class="meta-item text-danger">
-    <i class="bi bi-eye"></i> @Html.DisplayFor(model => model.ViewCount) vues
-    </span>
-    <span class="meta-item">
-                    par <strong>@(Model.User?.Email ?? "Utilisateur")</strong>
-    </span>
-    <span class="meta-item">
-                    @Model.CreatedAt.ToString("dd MMM. yyyy")
-    </span>
+﻿@model Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.Subject
+<link href="~/css/site.css" rel="stylesheet" />
+
+@{
+    ViewData["Title"] = Model.Title;
+    var userPostCounts = ViewBag.UserPostCounts as Dictionary<string, int> ?? new Dictionary<string, int>();
+}
+
+<div class="container">
+
+    <div class="subject-header">
+        <h1>@Html.DisplayFor(model => model.Title)</h1>
+        <div class="subject-meta">
+            <span class="meta-item">
+                <i class="bi bi-chat-dots"></i> @ViewBag.MessageCount messages
+            </span>
+            <span class="meta-item text-danger">
+                <i class="bi bi-eye"></i> @Html.DisplayFor(model => model.ViewCount) vues
+            </span>
+            <span class="meta-item">
+                par <strong>@(Model.User?.UserName ?? "Utilisateur")</strong>
+            </span>
+            <span class="meta-item">
+                @Model.CreatedAt.ToString("dd MMM. yyyy")
+            </span>
+        </div>
     </div>
-    </div>
- 
-        <div class="post-container">
-            @{
-                int postIndex = 1;
-            }
-            @foreach (var message in Model.Messages)
-            {
-    <div class="post-row">
- 
-                    <div class="post-author-sidebar">
-    <div class="author-avatar">
-                            @(message.User?.Email?.Substring(0, 2).ToUpper() ?? "??")
-    </div>
-    <h6 class="author-name">
-                            @(message.User?.Email ?? "Inconnu")
-    </h6>
-    <span class="badge bg-success">Membre</span>
-    <p class="author-stats">
-                            @(userPostCounts.GetValueOrDefault(message.UserId ?? "", 0)) messages
-    </p>
-    </div>
- 
-                    <div class="post-content-area">
-    <div class="post-date">
-                            #@postIndex — @message.CreatedAt.ToString("dd MMM. yyyy 'à' HH'h'mm")
-    </div>
-    <div class="post-text">
-                            @message.Content
-    </div>
-    <div class="post-actions">
-    <button type="button" class="btn-card">Citer</button>
-    <a asp-controller="Messages"
-                               asp-action="LikeCount"
-                               asp-route-id="@message.Id"
-                               class="btn-card">
-                                👍 J'aime (@message.LikeCount)
-    </a>
-    </div>
-    </div>
+
+    <div class="post-container">
+        @{
+            int postIndex = 1;
+        }
+        @foreach (var message in Model.Messages)
+        {
+            <div class="post-row">
+
+                <div class="post-author-sidebar">
+                    <div class="author-avatar">
+                        @(message.User?.UserName?.Substring(0, 2).ToUpper() ?? "??")
+                    </div>
+                    <h6 class="author-name">
+                        @(message.User?.UserName ?? "Inconnu")
+                    </h6>
+                    <span class="badge bg-success">Membre</span>
+                    <p class="author-stats">
+                        @(userPostCounts.GetValueOrDefault(message.UserId ?? "", 0)) messages
+                    </p>
                 </div>
-              { postIndex++; }
-            }
+
+                <div class="post-content-area">
+                    <div class="post-date">
+                        #@postIndex — @message.CreatedAt.ToString("dd MMM. yyyy 'à' HH'h'mm")
+                    </div>
+                    <div class="post-text">
+                        @Html.Raw(message.Content)
+                    </div>
+
+                    <div class="post-actions">
+                        <button type="button" class="btn-card">Citer</button>
+                        <a asp-controller="Messages"
+                           asp-action="Like" asp-route-id="@message.Id"
+                           class="btn-card">
+                            👍 J'aime (@message.LikeCount)
+                        </a>
+                    </div>
+                </div>
+            </div>
+            { postIndex++; }
+        }
     </div>
-        <div class="reply-section mt-4">
-            @if (User.Identity.IsAuthenticated)
-            {
-    <h5>Répondre au sujet</h5>
-    <form method="post" asp-controller="Messages" asp-action="Create">
-    <input type="hidden" name="SubjectId" value="@Model.Id" />
-    <div class="mb-3">
-    <textarea name="Content"
-                                  class="form-control"
-                                  rows="4"
-                                  placeholder="Écrivez votre message ici..."
-                                  required>
-    </textarea>
+    <div class="reply-section mt-4">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <h5>Répondre au sujet</h5>
+            <form method="post" asp-controller="Messages" asp-action="Create">
+                <input type="hidden" name="SubjectId" value="@Model.Id" />
+                <div class="mb-3">
+                    <textarea id="messageContent" name="Content"
+                          class="form-control" rows="4" placeholder="Écrivez votre message ici..." required>
+                    </textarea>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success">
+                        Envoyer votre message
+                    </button>
+                </div>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-info d-flex justify-content-between align-items-center">
+                <span>Vous devez être connecté pour participer à la discussion.</span>
+                <a asp-area="Identity"
+                   asp-page="/Account/Login"
+                   asp-route-returnUrl="@Context.Request.Path"
+                   class="btn btn-primary shadow-sm">
+                    Se connecter
+                </a>
+            </div>
+        }
     </div>
-    <div class="text-end">
-    <button type="submit" class="btn btn-success">
-                            Envoyer votre message
-    </button>
+
+    <div class="mt-4 d-flex gap-2">
+        @if (User.Identity.IsAuthenticated && User.Identity.Name == Model.User?.UserName)
+        {
+            <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn-warning-custom">
+                Modifier le sujet
+            </a>
+        }
+        <a asp-action="Index" class="btn-accent">Retour au forum</a>
     </div>
-    </form>
-            }
-            else
-            {
-    <div class="alert alert-info d-flex justify-content-between align-items-center">
-    <span>Vous devez être connecté pour participer à la discussion.</span>
-    <a asp-area="Identity"
-                       asp-page="/Account/Login"
-                       asp-route-returnUrl="@Context.Request.Path"
-                       class="btn btn-primary shadow-sm">
-                        Se connecter
-    </a>
-    </div>
-            }
-    </div>
- 
-        <div class="mt-4 d-flex gap-2">
-            @if (User.Identity.IsAuthenticated && User.Identity.Name == Model.User?.Email)
-            {
-    <a asp-action="Edit"
-                   asp-route-id="@Model.Id"
-                   class="btn-warning-custom">
-                    Modifier le sujet
-    </a>
-            }
-    <a asp-action="Index" class="btn-accent">Retour au forum</a>
-    </div>  
- 
-    </div>
+
+</div>
+@section Scripts {
+    <script src="https://cdn.tiny.cloud/1/2y3kz8ef292tu9hgci5w1gr7uqhonmx9li56zhgumnksp5hj/tinymce/8/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: '#messageContent',
+            height: 250,
+            menubar: false,
+            plugins: 'lists link',
+            toolbar: 'undo redo | bold italic underline | bullist numlist | link | removeformat'
+        });
+    </script>
+}

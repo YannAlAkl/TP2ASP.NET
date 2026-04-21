@@ -27,31 +27,26 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Subjects/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		// GET: Subjects/Details/5
+		public async Task<IActionResult> Details(int? id)
+		{
+			var subject = await _context.Subjects
+				.Include(s => s.Messages)
+				.FirstOrDefaultAsync(m => m.Id == id);
 
-            var subject = await _context.Subjects
-                .Include(s => s.Category)
-                .Include(s => s.User)
-                .Include(s => s.Messages)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (subject == null)
-            {
-                return NotFound();
-            }
-
-            RedirectToAction("Details", "Subject", new { id = subject.Id });
-
-            return View(subject);
-        }
-
+			if (subject != null)
+			{
+				foreach (var msg in subject.Messages)
+				{
+					// On force le chargement de l'utilisateur pour chaque message
+					msg.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == msg.UserId);
+				}
+			}
+			return View(subject);
+		
+		}        
         // GET: Subjects/Create
-        public IActionResult Create()
+		public IActionResult Create()
         {
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");

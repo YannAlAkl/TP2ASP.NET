@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -53,7 +50,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
         public IActionResult Create()
         {
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Title");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email");
             return View();
         }
 
@@ -129,7 +126,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Title", message.SubjectId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", message.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", message.UserId);
             return View(message);
         }
 
@@ -172,18 +169,30 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
         {
             return _context.Messages.Any(e => e.Id == id);
         }
-
+        [Authorize]
         public async Task<IActionResult> LikeCount(int id)
         {
-            var message = await _context.Messages.FirstOrDefaultAsync(m => m.Id == id);
-            if (message == null)
-            {
-                return NotFound();
-            }
-            message.LikeCount++;
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Details", "Subject", new { id = message.SubjectId });
+            var userId = _userManager.GetUserId(User);
 
-        }
+            var alreadyLiked = await _context.Messages
+                .AnyAsync(x => x.Id == id && x.UserId == userId);
+
+            if (!alreadyLiked)
+            {
+                _context.Messages.Add(new Message
+                {
+                    Id = id,
+                    UserId = userId
+                });
+
+                var message = await _context.Messages.FindAsync(id);
+                if (message != null) message.LikeCount++;
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", "Subject", new { id = message.SubjectId });
+
+            }
+            return RedirectToAction(nameof(Index));
+		}
+      }
     }
-}

@@ -1,39 +1,32 @@
-﻿@model IEnumerable<Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.ViewModels.createUserViewModel>
+﻿@model Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.ViewModels.createUserViewModel
 @{
     ViewData["Title"] = "Create";
 }
+
 <p>
     <a asp-controller="User" asp-action="Create">Create New</a>
-
 </p>
-@foreach (var user in Model.crea)
-{
-    <form action="/" method="post">
-        <h3>Nouvel utilisateur</h3>
 
-        <div>
-            <label for="username">Nom d'utilisateur :@user.UserName</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-
-        <div>
-            <label for="email">Email :@user.Email</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-
-        <div>
-            <label for="password">Mot de passe :@user.Password</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-
-        <div>
-            <label for="roles">Roles : @user.Role</label>
-            <select id="roles" name="Roles">
-                <option value="user" selected="@(user.Role == "user")">Utilisateur standard</option>
-                <option value="admin" selected="@(user.Role == "admin")">Admin</option>
-            </select>
-        </div>
-
-        <button type="submit">Créer le compte</button>
-    </form>
-    }
+<form asp-action="Create" method="post">
+    <h3>Nouvel utilisateur</h3>
+    <div>
+        <label asp-for="UserName">Nom d'utilisateur :</label>
+        <input type="text" asp-for="UserName" required>
+    </div>
+    <div>
+        <label asp-for="Email">Email :</label>
+        <input type="email" asp-for="Email" required>
+    </div>
+    <div>
+        <label asp-for="Password">Mot de passe :</label>
+        <input type="password" asp-for="Password" required>
+    </div>
+    <div>
+        <label asp-for="Role">Rôle :</label>
+        <select asp-for="Role">
+            <option value="User">Utilisateur standard</option>
+            <option value="Admin">Admin</option>
+        </select>
+    </div>
+    <button type="submit">Créer le compte</button>
+</form>

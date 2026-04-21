@@ -270,6 +270,10 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Migrations
                     b.Property<int>("LikeCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("LikedByUserIds")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
@@ -304,6 +308,13 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<int>("LikeCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LikedByUserIds")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
