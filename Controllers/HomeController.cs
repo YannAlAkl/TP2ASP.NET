@@ -22,7 +22,11 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 
         public async Task<IActionResult>  Index()
         {
-            var categories = await _context.Categories.Include(s => s.Subjects).ToListAsync();
+            var categories = await _context.Categories.Where(c=>!c.IsDeleted)
+                .Include(s => s.Subjects.Where(s => !s.IsDeleted))
+                    .ThenInclude(s=>s.User)
+                   
+                .ToListAsync();
             return View(categories);
         }
 

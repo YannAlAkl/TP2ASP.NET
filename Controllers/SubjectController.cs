@@ -44,8 +44,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 
 		// GET: Subjects/Create
 		[Authorize] 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
+		[HttpGet]
 		public IActionResult Create()
 		{
 			ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
@@ -58,7 +57,6 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[Authorize]
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Create([Bind("Id,Title,Content,CreatedAt,ViewCount,IsDeleted,CategoryId,UserId")] Subject subject)
 		{
 			if (ModelState.IsValid)

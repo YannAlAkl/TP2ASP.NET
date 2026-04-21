@@ -34,10 +34,11 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 return NotFound();
             }
 
-            // ✅ Retourne un seul Category filtré par id
             var detailCategory = await _context.Categories
-                .Include(s => s.Subjects)
-                    .ThenInclude(m => m.Messages)
+                .Include(c => c.Subjects)
+                    .ThenInclude(s=>s.User)
+				.Include(c => c.Subjects)
+					.ThenInclude(m => m.Messages)
                     .ThenInclude(m => m.User)
                 .FirstOrDefaultAsync(c => c.Id == id);
             detailCategory.Subjects = detailCategory.Subjects.Where(s => !s.IsDeleted).ToList();
@@ -70,7 +71,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             {
                 _context.Add(category);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(HomeController.Index),"");
             }
             return View(category);
         }
