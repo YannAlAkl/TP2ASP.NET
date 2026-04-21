@@ -30,21 +30,27 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 		// GET: Subjects/Details/5
 		public async Task<IActionResult> Details(int id)
 		{
-			var subject = await _context.Subjects
-				 .Include(s => s.User)
-				.Include(s => s.Messages)
-			     .ThenInclude(m => m.User) 
-				.FirstOrDefaultAsync(s => s.Id == id);
-
-			if (subject == null)
+			if (id == null)
+			{
 				return NotFound();
+			}
 
+			var subject = await _context.Subjects
+				.Include(s => s.Messages)
+				.FirstOrDefaultAsync(m => m.Id == id);
+
+			if (subject != null)
+			{
+				foreach (var msg in subject.Messages)
+				{
+					// On force le chargement de l'utilisateur pour chaque message
+					msg.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == msg.UserId);
+				}
+			}
 			return View(subject);
-		}
-
-		// GET: Subjects/Create
-		[Authorize] 
-		[HttpGet]
+		
+		}        
+        // GET: Subjects/Create
 		public IActionResult Create()
 		{
 			ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
@@ -52,23 +58,24 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 			return View();
 		}
 
-		// POST: Subjects/Create
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[Authorize]
-		[HttpPost]
-		public async Task<IActionResult> Create([Bind("Id,Title,Content,CreatedAt,ViewCount,IsDeleted,CategoryId,UserId")] Subject subject)
-		{
-			if (ModelState.IsValid)
-			{
-				_context.Add(subject);
-				await _context.SaveChangesAsync();
-				return RedirectToAction("Details", "Subject", new { id = subject.Id });
-			}
-			ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", subject.CategoryId);
-			ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", subject.UserId);
-			return View(subject);
-		}
+        // POST: Subjects/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Title,Content,CreatedAt,ViewCount,IsDeleted,CategoryId,UserId")] Subject subject)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(subject);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", "Subject", new { id = subject.Id });
+            }
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", subject.CategoryId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", subject.UserId);
+            return View(subject);
+        }
 
 		// GET: Subjects/Edit/5
 		[Authorize]
