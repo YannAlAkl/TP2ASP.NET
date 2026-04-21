@@ -9,32 +9,34 @@
 <h4>Subject</h4>
 <hr />
 <div class="row">
-    < class="col-md-4">
+    <div class="col-md-8">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
+
+            <div class="form-group mb-3">
+                <label asp-for="Title" class="control-label">Titre</label>
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Content" class="control-label"></label>
-                <input asp-for="Content" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Content" class="control-label">Contenu</label>
+             
+                <textarea asp-for="Content" id="subjectContent" class="form-control" rows="6"></textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
 
-        <div class="form-group" hidden>
-            <label asp-for="CategoryId" class="control-label"></label>
-            <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
-        </div>
-
-     
-            <div class="form-group">
-                <label asp-for="Category.Name" class="control-label"></label>
-                <select asp-for="Category.Name" class ="form-control" asp-items="ViewBag.CategoryId"></select>
+            <div class="form-group mb-3">
+                <label asp-for="CategoryId" class="control-label">Catégorie</label>
+                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId">
+                    <option value="">-- Choisir une catégorie --</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Créer" class="btn btn-primary" />
+                <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">Annuler</a>
             </div>
         </form>
     </div>
@@ -45,5 +47,20 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    @* Intégration TinyMCE sur le champ Contenu *@
+    <script src="https://cdn.tiny.cloud/1/2y3kz8ef292tu9hgci5w1gr7uqhonmx9li56zhgumnksp5hj/tinymce/8/tinymce.min.js"
+            referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: '#subjectContent',
+            height: 300,
+            menubar: false,
+            plugins: 'lists link',
+            toolbar: 'undo redo | bold italic underline | bullist numlist | link | removeformat'
+        });
+    </script>
 }

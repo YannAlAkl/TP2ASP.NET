@@ -21,11 +21,17 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
         }
 
         // GET: category
+        // GET: Category - vue gestion réservée à l'admin
+        // (les utilisateurs voient les catégories sur la page d'accueil Home/Index)
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            return View(await _context.Categories
+                .Where(c => !c.IsDeleted)
+                .ToListAsync());
         }
 
+        // GET: Categories/Details/5
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -36,24 +42,32 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 
             var detailCategory = await _context.Categories
                 .Include(c => c.Subjects)
-                    .ThenInclude(s=>s.User)
-				.Include(c => c.Subjects)
-					.ThenInclude(m => m.Messages)
-                    .ThenInclude(m => m.User)
+                    .ThenInclude(s => s.User)
+                .Include(c => c.Subjects)
+                    .ThenInclude(s => s.Messages)
+                        .ThenInclude(m => m.User)
                 .FirstOrDefaultAsync(c => c.Id == id);
-            detailCategory.Subjects = detailCategory.Subjects.Where(s => !s.IsDeleted).ToList();
 
+            // Vérification du null AVANT de toucher à detailCategory.Subjects
             if (detailCategory == null)
             {
                 return NotFound();
             }
+
+            // On filtre les sujets supprimés et on les trie par date décroissante
+            detailCategory.Subjects = detailCategory.Subjects
+                .Where(s => !s.IsDeleted)
+                .OrderByDescending(s => s.CreatedAt)
+                .ToList();
 
             return View(detailCategory);
         }
 
         // GET: Categories/Create
 
-        [Authorize]
+        // GET: Categories/Create
+        [Authorize(Roles = "Admin")]
+        
         public IActionResult Create()
         {
             return View();
@@ -77,7 +91,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
         }
 
         // GET: Categories/Edit/5
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -96,7 +110,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
         // POST: Categories/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,IsDeleted")] Category category)
@@ -130,7 +144,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
         }
 
         // GET: Categories/Delete/5
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -149,19 +163,39 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
         }
 
         // POST: Categories/Delete/5
-        [Authorize]
+
+        // POST: Categories/Delete/5 - Suppression LOGIQUE avec cascade
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            // On charge la catégorie avec ses sujets et leurs messages pour cascade
+            var category = await _context.Categories
+                .Include(c => c.Subjects)
+                    .ThenInclude(s => s.Messages)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (category != null)
             {
-                _context.Categories.Remove(category);
+                // Suppression LOGIQUE de la catégorie
+                category.IsDeleted = true;
+
+                // Cascade : on marque aussi les sujets et messages comme supprimés
+                foreach (var subject in category.Subjects)
+                {
+                    subject.IsDeleted = true;
+                    foreach (var message in subject.Messages)
+                    {
+                        message.IsDeleted = true;
+                    }
+                }
+
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            // Retour vers l'accueil (où les catégories sont listées)
+            return RedirectToAction("Index", "Home");
         }
 
         private bool CategoryExists(int id)

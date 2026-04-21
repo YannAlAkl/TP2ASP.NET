@@ -4,6 +4,12 @@
 @{
     ViewData["Title"] = Model.Title;
     var userPostCounts = ViewBag.UserPostCounts as Dictionary<string, int> ?? new Dictionary<string, int>();
+
+    // Données de pagination passées par le contrôleur
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int totalMessages = ViewBag.MessageCount ?? 0;
 }
 
 <div class="container">
@@ -26,9 +32,29 @@
         </div>
     </div>
 
+    @* ================== SÉLECTEUR DE PAGINATION ================== *@
+    <div class="d-flex justify-content-between align-items-center my-3">
+        <form method="get" class="d-flex align-items-center gap-2">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="page" value="1" />
+            <label for="pageSize" class="me-2 mb-0">Messages par page :</label>
+            <select id="pageSize" name="pageSize" class="form-select form-select-sm" style="width:auto;"
+                    onchange="this.form.submit()">
+                <option value="5" selected="@(pageSize == 5)">5</option>
+                <option value="10" selected="@(pageSize == 10)">10</option>
+                <option value="20" selected="@(pageSize == 20)">20</option>
+                <option value="50" selected="@(pageSize == 50)">50</option>
+            </select>
+        </form>
+        <div class="text-muted small">
+            Page @currentPage sur @totalPages — @totalMessages message(s)
+        </div>
+    </div>
+
     <div class="post-container">
         @{
-            int postIndex = 1;
+            // Index global du message (tient compte de la pagination)
+            int postIndex = (currentPage - 1) * pageSize + 1;
         }
         @foreach (var message in Model.Messages)
         {
@@ -57,9 +83,7 @@
 
                     <div class="post-actions">
                         <button type="button" class="btn-card">Citer</button>
-                        <a asp-controller="Messages"
-                           asp-action="Like" asp-route-id="@message.Id"
-                           class="btn-card">
+                        <a asp-controller="Messages" asp-action="Like" asp-route-id="@message.Id" class="btn-card">
                             👍 J'aime (@message.LikeCount)
                         </a>
                     </div>
@@ -67,7 +91,48 @@
             </div>
             { postIndex++; }
         }
-    </div>
+    </div{ postIndex++; }
+    }
+</div>
+
+@* ================== NAVIGATION DE PAGINATION ================== *@
+@if (totalPages > 1)
+{
+    <nav aria-label="Navigation pages" class="mt-3">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                <a class="page-link"
+                       asp-action="Details"
+                       asp-route-id="@Model.Id"
+                       asp-route-page="@(currentPage - 1)"
+                       asp-route-pageSize="@pageSize">
+                    Précédent
+                </a>
+            </li>
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="Details"
+                       asp-route-id="@Model.Id"
+                       asp-route-page="@i"
+                       asp-route-pageSize="@pageSize">@i</a>
+                </li>
+            }
+            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                <a class="page-link"
+                       asp-action="Details"
+                       asp-route-id="@Model.Id"
+                       asp-route-page="@(currentPage + 1)"
+                       asp-route-pageSize="@pageSize">
+                    Suivant
+                </a>
+            </li>
+        </ul>
+    </nav>
+}
+
+<div class="reply-section mt-4">
     <div class="reply-section mt-4">
         @if (User.Identity.IsAuthenticated)
         {

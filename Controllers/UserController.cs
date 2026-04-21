@@ -21,44 +21,52 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 
 		}
 
-		// GET: UserController
-		[Authorize(Roles = "Admin")]
-		public async Task<IActionResult> Index()
-		{
-			var userStats = await _userManager.Users.ToListAsync();			
-			var result = new List<UserStatsViewModel>();
-			foreach (var user in userStats)
-			{
-				var subjectCount = await _context.Subjects.CountAsync(s => s.UserId == user.Id);
-				var messageCount = await _context.Messages.CountAsync(m => m.UserId == user.Id);
-				var lastActivityMessage = await _context.Messages
-					.Where(m => m.UserId == user.Id)
-					.OrderByDescending(m => m.CreatedAt)
-					.Select(m => m.CreatedAt)
-					.FirstOrDefaultAsync();
-				var lastActivitySubject = await _context.Subjects
-					.Where(s => s.UserId == user.Id)
-					.OrderByDescending(s => s.CreatedAt)
-					.Select(s => s.CreatedAt)
-					.FirstOrDefaultAsync();
+        // GET: UserController
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Index()
+        {
+            var userStats = await _userManager.Users.ToListAsync();
+            var result = new List<UserStatsViewModel>();
+            foreach (var user in userStats)
+            {
+                // Statistiques : on exclut les sujets et messages supprimés logiquement
+                var subjectCount = await _context.Subjects
+                    .CountAsync(s => s.UserId == user.Id && !s.IsDeleted);
 
-				var lastActivity = lastActivityMessage > lastActivitySubject ? lastActivityMessage : lastActivitySubject;
+                var messageCount = await _context.Messages
+                    .CountAsync(m => m.UserId == user.Id && !m.IsDeleted);
 
-				result.Add(new UserStatsViewModel
-				{
-					Id = user.Id.GetHashCode(),
-					UserName = user.UserName,
-					Email = user.Email,
-					SubjectCount = subjectCount,
-					MessageCount = messageCount,
-					LastActivity = lastActivity
-				});
-			};
-			return View(result);
-		}
+                var lastActivityMessage = await _context.Messages
+                    .Where(m => m.UserId == user.Id && !m.IsDeleted)
+                    .OrderByDescending(m => m.CreatedAt)
+                    .Select(m => m.CreatedAt)
+                    .FirstOrDefaultAsync();
 
-		// GET: UserController/Details/5
-		public ActionResult Details(int id)
+                var lastActivitySubject = await _context.Subjects
+                    .Where(s => s.UserId == user.Id && !s.IsDeleted)
+                    .OrderByDescending(s => s.CreatedAt)
+                    .Select(s => s.CreatedAt)
+                    .FirstOrDefaultAsync();
+
+                var lastActivity = lastActivityMessage > lastActivitySubject
+                    ? lastActivityMessage
+                    : lastActivitySubject;
+
+                result.Add(new UserStatsViewModel
+                {
+                    Id = user.Id.GetHashCode(),
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    SubjectCount = subjectCount,
+                    MessageCount = messageCount,
+                    LastActivity = lastActivity
+                });
+            }
+            return View(result);
+        }
+
+        // GET: UserController/Details/5
+        public ActionResult Details(int id)
 		{
 			return View();
 		}

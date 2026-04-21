@@ -39,7 +39,16 @@
             <tbody>
                 @foreach (var subject in Model.Subjects ?? Enumerable.Empty<Subject>())
                 {
-                    var lastMsg = subject.Messages?.OrderByDescending(m => m.CreatedAt).FirstOrDefault();
+                    var lastMsg = subject.Messages?
+                        .Where(m => !m.IsDeleted)
+                        .OrderByDescending(m => m.CreatedAt)
+                        .FirstOrDefault();
+
+                    var currentUserName = User.Identity?.Name;
+                    bool canEdit = User.Identity != null && User.Identity.IsAuthenticated
+                                   && (currentUserName == subject.User?.UserName || User.IsInRole("Admin"));
+                    bool canDelete = User.IsInRole("Admin");
+
                     <tr>
                         <td>
                             <div class="subject-title">
@@ -55,37 +64,46 @@
                                 par @(subject.User?.UserName ?? "Anonyme")•@subject.CreatedAt.ToString("d MMM yyyy")
                             </small>
                         </td>
-                        <td class="text-center">@(subject.Messages?.Count() ?? 0)</td>
+                        <td class="text-center">@(subject.Messages?.Count(m => !m.IsDeleted) ?? 0)</td>
                         <td class="text-center">@subject.ViewCount</td>
                         <td class="text-center">
                             <div class="btn-group">
-                                @if (User.Identity.IsAuthenticated)
+                                @if (canEdit)
                                 {
-                                    @* Actions réelles *@
-                                    <a asp-controller="Subject" asp-action="Edit" asp-route-id="@subject.Id" class="btn btn-sm btn-outline-warning">
+                                    <a asp-controller="Subject" asp-action="Edit" asp-route-id="@subject.Id"
+                                           class="btn btn-sm btn-outline-warning" title="Modifier">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <a asp-controller="Subject" asp-action="Delete" asp-route-id="@subject.Id" class="btn btn-sm btn-outline-danger">
+                                }
+                                @if (canDelete)
+                                {
+                                    <a asp-controller="Subject" asp-action="Delete" asp-route-id="@subject.Id"
+                                           class="btn btn-sm btn-outline-danger" title="Supprimer">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 }
-                                else
+                                @if (!canEdit && !canDelete)
                                 {
-                                    @* Garde le crayon et la poubelle, mais redirection *@
-                                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-sm btn-outline-warning">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                                   
+                                    <span class="text-muted small">—</span>
                                 }
                             </div>
                         </td>
                         <td>
                             @if (lastMsg != null)
                             {
-                                <div class="fw-bold text-truncate" style="max-width: 150px;">@(lastMsg.User?.UserName ?? "Anonyme")</div>
-                                <small class="text-muted">@GetRelativeTime(lastMsg.CreatedAt)</small>
+                               
+                                <div class="fw-bold text-truncate" style="max-width: 150px;">
+                                    @(lastMsg.User?.UserName ?? "Anonyme")
+                                </div>
+                                
+                                <small class="text-muted d-block">
+                                    @lastMsg.CreatedAt.ToString("dd MMM yyyy 'à' HH:mm")
+                                </small>
+                               
+                                <small class="text-muted fst-italic">
+                                    @GetRelativeTime(lastMsg.CreatedAt)
+                                </small>
                             }
                             else
                             {
