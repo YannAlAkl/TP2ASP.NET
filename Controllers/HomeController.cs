@@ -20,16 +20,16 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
         }
 
 
-        // Page d'accueil : affiche chaque catégorie avec ses 3 derniers sujets
+        
         public async Task<IActionResult> Index()
         {
-            // On charge d'abord les catégories actives (sans inclure les sujets)
+            
             var categories = await _context.Categories
                 .Where(c => !c.IsDeleted)
                 .OrderBy(c => c.Name)
                 .ToListAsync();
 
-            // Pour chaque catégorie, on charge séparément les 3 sujets les plus récents
+            
             foreach (var category in categories)
             {
                 category.Subjects = await _context.Subjects

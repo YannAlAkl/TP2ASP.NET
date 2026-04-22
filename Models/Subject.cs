@@ -30,7 +30,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models
         public Category? Category { get; set; } = null;
 		public string LikedByUserIds { get; set; } = string.Empty;
 
-		// FK vers Identity
+		
 
 		public string? UserId { get; set; }
 

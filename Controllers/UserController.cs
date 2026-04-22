@@ -21,7 +21,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 
 		}
 
-        // GET: UserController
+        
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
@@ -29,7 +29,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             var result = new List<UserStatsViewModel>();
             foreach (var user in userStats)
             {
-                // Statistiques : on exclut les sujets et messages supprimés logiquement
+                
                 var subjectCount = await _context.Subjects
                     .CountAsync(s => s.UserId == user.Id && !s.IsDeleted);
 
@@ -65,14 +65,14 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             return View(result);
         }
 
-        // GET: UserController/Details/5
+        
         public ActionResult Details(int id)
 		{
 			return View();
 		}
 
 		[Authorize(Roles = "Admin")]
-		// GET: UserController/Create
+		
 		public async Task<ActionResult> Create()
 		{
 			return View();
@@ -106,13 +106,13 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 
 		return RedirectToAction(nameof(Index));
 	}
-		// GET: UserController/Edit/5
+		
 		public ActionResult Edit(int id)
 		{
 			return View();
 		}
 
-		// POST: UserController/Edit/5
+		
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public ActionResult Edit(int id, IFormCollection collection)
@@ -127,13 +127,13 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 			}
 		}
 
-		// GET: UserController/Delete/5
+		
 		public ActionResult Delete(int id)
 		{
 			return View();
 		}
 
-		// POST: UserController/Delete/5
+		
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public ActionResult Delete(int id, IFormCollection collection)

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Build.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models
 {
@@ -14,6 +15,8 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models
         public string? Description { get; set; }
 
         public bool IsDeleted { get; set; } = false;
+
+        public bool Delete { get; set; }
 
         public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
     }

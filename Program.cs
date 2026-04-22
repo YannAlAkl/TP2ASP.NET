@@ -4,15 +4,15 @@ using Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Connection string
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                       ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-// DbContext
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// Identity + Roles (CORRECTION CS0411 : Ajout explicite des types)
+
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -34,7 +34,7 @@ using (var scope = app.Services.CreateScope())
     await SeedRolesAsync(services);
     await SeedAdminUserAsync(services);
 }
-// Middleware / pipeline
+
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -62,12 +62,12 @@ app.MapRazorPages();
 app.Run();
 
 
-// =========================
-// METHODS
-// =========================
+
+
+
 static async Task SeedRolesAsync(IServiceProvider services)
 {
-    // CORRECTION : Spécification du type RoleManager
+    
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
     string[] roles = { "Admin", "User" };
@@ -83,7 +83,7 @@ static async Task SeedRolesAsync(IServiceProvider services)
 
 static async Task SeedAdminUserAsync(IServiceProvider services)
 {
-    // CORRECTION : Spécification des types UserManager et RoleManager
+    
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
@@ -111,7 +111,7 @@ static async Task SeedAdminUserAsync(IServiceProvider services)
     }
     else
     {
-        // Si l'utilisateur existe déjà, réinitialiser son mot de passe
+        
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
         await userManager.ResetPasswordAsync(user, token, adminPassword);
     }
