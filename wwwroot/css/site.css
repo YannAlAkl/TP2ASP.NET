@@ -1,6 +1,4 @@
-/* ============================================================
-   Forum Sport - theme Arena (v6)
-   ============================================================ */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800;900&display=swap');
 
@@ -135,7 +133,7 @@ body.theme-arena {
     }
 }
 
-/* ----- Header (dark arena bar) ----- */
+
 .site-header {
     position: sticky;
     top: 0;
@@ -262,7 +260,7 @@ body.theme-arena {
         color: #fff !important;
     }
 
-/* ----- Pied de page ----- */
+
 .site-footer {
     position: absolute;
     bottom: 0;
@@ -300,7 +298,7 @@ body.theme-arena {
             text-decoration: underline;
         }
 
-/* ----- Authentification ----- */
+
 .auth-wrapper {
     min-height: calc(100vh - 160px);
     display: flex;
@@ -428,12 +426,12 @@ body.theme-arena {
         font-size: 0.8rem;
     }
 
-/* ----- Utilitaires ----- */
+
 .text-accent {
     color: var(--accent-cyan);
 }
 
-/* ----- Titres ----- */
+
 h1 {
     font-family: var(--font-display);
     font-size: clamp(2.75rem, 6vw, 3.75rem);
@@ -564,7 +562,7 @@ main .validation-summary-errors {
         border-color: rgba(0, 163, 204, 0.25) !important;
     }
 
-/* ----- Bloc forum ----- */
+
 .forum-container {
     background: #ffffff;
     border: 1px solid var(--border);
@@ -591,7 +589,7 @@ main .validation-summary-errors {
         margin-bottom: 1.25rem;
     }
 
-/* ----- Table forum ----- */
+
 .forum-table {
     margin-bottom: 0;
     border-collapse: separate;
@@ -774,7 +772,7 @@ main .validation-summary-errors {
         color: #a06400;
     }
 
-/* ----- Boutons primaires (hors auth) ----- */
+
 .btn-primary {
     background: linear-gradient(135deg, #00b4d8, #0096c7) !important;
     border: none !important;
@@ -796,7 +794,7 @@ main .validation-summary-errors {
         color: #fff !important;
     }
 
-/* ----- Cartes accueil ----- */
+
 .home-card {
     position: relative;
     text-align: center;
@@ -964,7 +962,7 @@ main .validation-summary-errors {
     opacity: 1;
 }
 
-/* ----- Fil de discussion (Details sujet) : carte, Details.cshtml inchangé (:has) ----- */
+
 body.theme-arena main .container:has(> .subject-header):has(> .post-container) {
     position: relative;
     max-width: 920px;
@@ -1215,7 +1213,7 @@ body.theme-arena main .container:has(> .subject-header):has(> .post-container) .
         color: #7a4a00 !important;
     }
 
-/* "Retour" : meme look que l'ancien .btn-thread-back (pas le .btn-accent du header) */
+
 body.theme-arena main .container:has(> .subject-header):has(> .post-container) a.btn-accent {
     display: inline-flex;
     align-items: center;
@@ -1241,7 +1239,7 @@ body.theme-arena main .container:has(> .subject-header):has(> .post-container) a
         color: #fff !important;
     }
 
-/* ----- Tables Bootstrap ----- */
+
 .table {
     --bs-table-bg: transparent;
     --bs-table-color: var(--text-primary);
@@ -1254,7 +1252,7 @@ body.theme-arena main .container:has(> .subject-header):has(> .post-container) a
         border-color: var(--border);
     }
 
-/* ----- Barre de defilement ----- */
+
 ::-webkit-scrollbar {
     width: 10px;
 }

@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Migrations
 {
-    /// <inheritdoc />
+    
     public partial class Initial : Migration
     {
-        /// <inheritdoc />
+        
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -295,7 +295,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Migrations
                 column: "UserId");
         }
 
-        /// <inheritdoc />
+        
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

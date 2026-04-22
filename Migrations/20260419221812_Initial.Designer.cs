@@ -11,7 +11,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Migrations
     [Migration("20260419221812_Initial")]
     partial class Initial
     {
-        /// <inheritdoc />
+        
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

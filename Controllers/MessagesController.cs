@@ -19,8 +19,6 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             _userManager = userManager;
         }
 
-        // GET: Messages
-        // GET: Messages - vue gestion réservée à l'admin
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
@@ -30,8 +28,6 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 .Include(m => m.User);
             return View(await applicationDbContext.ToListAsync());
         }
-
-        // GET: Messages/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -51,7 +47,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             return View(message);
         }
 
-        // GET: Messages/Create
+
         [Authorize]
 
         public IActionResult Create()
@@ -60,30 +56,25 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email");
             return View();
         }
-
-        // POST: Messages/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        // POST: Messages/Create - L'utilisateur doit être connecté pour répondre
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Content,SubjectId")] Message message)
         {
-            // Si le contenu est vide, on retourne à la page du sujet sans créer de message
+
             if (string.IsNullOrWhiteSpace(message.Content))
             {
                 return RedirectToAction("Details", "Subject", new { id = message.SubjectId });
             }
 
-            // Création du message avec les infos serveur (non modifiables par le formulaire)
+
             var newMessage = new Message
             {
                 Content = message.Content,
-                CreatedAt = DateTime.Now,          // date définie côté serveur
-                IsDeleted = false,                 // jamais supprimé à la création
+                CreatedAt = DateTime.Now,
+                IsDeleted = false,
                 SubjectId = message.SubjectId,
-                UserId = _userManager.GetUserId(User)  // association automatique à l'utilisateur connecté
+                UserId = _userManager.GetUserId(User)
             };
 
             _context.Messages.Add(newMessage);
@@ -91,7 +82,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 
             return RedirectToAction("Details", "Subject", new { id = message.SubjectId });
         }
-        // GET: Messages/Edit/5
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -109,9 +100,8 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             return View(message);
         }
 
-        // POST: Messages/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Content,CreatedAt,IsDeleted,SubjectId,UserId")] Message message)
@@ -146,8 +136,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             return View(message);
         }
 
-        // GET: Messages/Delete/5
-        // GET: Messages/Delete/5 - Propriétaire ou Admin
+
         [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -165,7 +154,6 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 return NotFound();
             }
 
-            // Vérification de propriété : seul l'auteur du message (ou un admin) peut le supprimer
             var currentUserId = _userManager.GetUserId(User);
             if (message.UserId != currentUserId && !User.IsInRole("Admin"))
             {
@@ -175,8 +163,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             return View(message);
         }
 
-        // POST: Messages/Delete/5
-        // POST: Messages/Delete/5 - Suppression LOGIQUE
+
         [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -188,18 +175,17 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Vérification de propriété
+
             var currentUserId = _userManager.GetUserId(User);
             if (message.UserId != currentUserId && !User.IsInRole("Admin"))
             {
                 return Forbid();
             }
 
-            // Suppression LOGIQUE (la consigne interdit la suppression définitive)
+
             message.IsDeleted = true;
             await _context.SaveChangesAsync();
 
-            // Retour à la page du sujet
             return RedirectToAction("Details", "Subject", new { id = message.SubjectId });
         }
 
@@ -207,9 +193,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
         {
             return _context.Messages.Any(e => e.Id == id);
         }
-        [Authorize]
-        // Action "J'aime" - renommée de LikeCount en Like pour correspondre au bouton de la vue
-        // On stocke les Ids des usagers qui ont aimé dans le champ LikedByUserIds (séparés par des virgules)
+
         [Authorize]
         public async Task<IActionResult> Like(int id)
         {
@@ -225,22 +209,18 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
                 return NotFound();
             }
 
-            // On récupère la liste des Ids des usagers qui ont déjà aimé ce message
             var likedIds = (message.LikedByUserIds ?? string.Empty)
                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
                 .ToList();
 
             if (!likedIds.Contains(userId))
             {
-                // L'usager n'a pas encore aimé : on ajoute son Id
                 likedIds.Add(userId);
                 message.LikedByUserIds = string.Join(",", likedIds);
                 message.LikeCount = likedIds.Count;
                 await _context.SaveChangesAsync();
             }
-            // Si déjà aimé, on ne fait rien (pas de double-like)
 
-            // Retour vers la page du sujet
             return RedirectToAction("Details", "Subject", new { id = message.SubjectId });
         }
     }

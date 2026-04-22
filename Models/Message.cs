@@ -17,7 +17,7 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models
         public int SubjectId { get; set; }
         public Subject? Subject { get; set; }
 
-        // FK vers Identity
+        
         public string? UserId { get; set; }
 
         public int LikeCount { get; set; }
