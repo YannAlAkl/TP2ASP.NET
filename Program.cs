@@ -60,11 +60,6 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
-
-
-
-
-
 static async Task SeedRolesAsync(IServiceProvider services)
 {
     

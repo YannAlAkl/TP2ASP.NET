@@ -66,15 +66,13 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 
 		[Authorize(Roles = "Admin")]
 		[HttpPost]
-		public async Task<IActionResult> Create([Bind("Id,Name,Description,IsDeleted")] Category category)
+		public async Task<IActionResult> Create([Bind("Id,Name,Description,IsDeleted,Logo")] Category category)
 		{
 			if (ModelState.IsValid)
 			{
 				_context.Add(category);
 				await _context.SaveChangesAsync();
 				return RedirectToAction("Index", "Home");
-
-
 			}
 			return View(category);
 		}

@@ -14,9 +14,9 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models
         [StringLength(500)]
         public string? Description { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
+		public string? Logo { get; set; }
 
-        public bool Delete { get; set; }
+		public bool IsDeleted { get; set; } = false;
 
         public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
     }

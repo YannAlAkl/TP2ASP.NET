@@ -5,24 +5,33 @@
 }
 
 <h1>Create</h1>
-
 <h4>Category</h4>
 <hr />
+
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+    <div class="col-md-6">
+        <form asp-action="Create" id="createCategoryForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+
+            <div class="form-group mb-3">
+                <label asp-for="Logo" class="control-label">Logo (Émoji)</label>
+                <textarea asp-for="Logo" id="LogoEditor" class="form-control"></textarea>
+                <span asp-validation-for="Logo" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            <div class="form-group mb-3">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <textarea asp-for="Description" id="DescriptionEditor" class="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            <div class="form-group mt-4">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -34,5 +43,43 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdn.tiny.cloud/1/2y3kz8ef292tu9hgci5w1gr7uqhonmx9li56zhgumnksp5hj/tinymce/8/tinymce.min.js" referrerpolicy="origin"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        tinymce.init({
+            selector: '#LogoEditor',
+            height: 150,
+            menubar: false,
+            statusbar: false,
+            promotion: false,
+            plugins: 'emoticons',
+            toolbar: 'emoticons',
+            setup: function (editor) {
+                editor.on('change', function () { tinymce.triggerSave(); });
+            }
+        });
+
+        tinymce.init({
+            selector: '#DescriptionEditor',
+            height: 250,
+            menubar: false,
+            promotion: false,
+            plugins: 'emoticons lists link',
+            toolbar: 'undo redo | bold italic | emoticons',
+            setup: function (editor) {
+                editor.on('change', function () { tinymce.triggerSave(); });
+            }
+        });
+        document.getElementById('createCategoryForm').addEventListener('submit', function () {
+            var logoEditor = tinymce.get('LogoEditor');
+            if (logoEditor) {
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = logoEditor.getContent();
+                document.getElementById('Logo').value = tempDiv.innerText.trim();
+            }
+        });
+    </script>
 }
