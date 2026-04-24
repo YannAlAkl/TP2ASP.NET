@@ -19,33 +19,35 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
             _context = context;
         }
 
+		public async Task<IActionResult> Index(int? pageNumber)
+		{
+			var pageSize = 6;
+			var currentPage = pageNumber ?? 1;
 
-        
-        public async Task<IActionResult> Index()
-        {
-            
-            var categories = await _context.Categories
-                .Where(c => !c.IsDeleted)
-                .OrderBy(c => c.Name)
-                .ToListAsync();
+			var categoriesQuery = _context.Categories
+				.Where(c => !c.IsDeleted)
+				.OrderBy(c => c.Name)
+				.AsNoTracking();
 
-            
-            foreach (var category in categories)
-            {
-                category.Subjects = await _context.Subjects
-                    .Where(s => s.CategoryId == category.Id && !s.IsDeleted)
-                    .OrderByDescending(s => s.CreatedAt)
-                    .Take(3)
-                    .Include(s => s.User)
-                    .Include(s => s.Messages.Where(m => !m.IsDeleted))
-                        .ThenInclude(m => m.User)
-                    .ToListAsync();
-            }
+			var paginatedCategories = await PaginatedList<Category>.CreateAsync(categoriesQuery, currentPage, pageSize);
 
-            return View(categories);
-        }
+			foreach (var category in paginatedCategories)
+			{
+				category.Subjects = await _context.Subjects
+					.Where(s => s.CategoryId == category.Id && !s.IsDeleted)
+					.OrderByDescending(s => s.CreatedAt)
+					.Take(3)
+					.Include(s => s.User)
+					.Include(s => s.Messages.Where(m => !m.IsDeleted))
+					.ThenInclude(m => m.User)
+					.AsNoTracking()
+					.ToListAsync();
+			}
 
-        public IActionResult Privacy()
+			return View(paginatedCategories);
+		}
+
+		public IActionResult Privacy()
         {
             return View();
         }
