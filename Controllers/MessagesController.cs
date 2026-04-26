@@ -82,57 +82,59 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 
             return RedirectToAction("Details", "Subject", new { id = message.SubjectId });
         }
-
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var message = await _context.Messages.FindAsync(id);
-            if (message == null)
-            {
-                return NotFound();
-            }
+            if (message == null) return NotFound();
+
+           
+            var currentUserId = _userManager.GetUserId(User);
+            if (message.UserId != currentUserId && !User.IsInRole("Admin"))
+                return Forbid();
+
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Title", message.SubjectId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", message.UserId);
             return View(message);
         }
 
 
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Content,CreatedAt,IsDeleted,SubjectId,UserId")] Message message)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Content")] Message message)
         {
-            if (id != message.Id)
-            {
-                return NotFound();
-            }
+            if (id != message.Id) return NotFound();
+
+            var existing = await _context.Messages.FindAsync(id);
+            if (existing == null) return NotFound();
+
+            // Ownership check
+            var currentUserId = _userManager.GetUserId(User);
+            if (existing.UserId != currentUserId && !User.IsInRole("Admin"))
+                return Forbid();
+
+            ModelState.Remove("User");
+            ModelState.Remove("Subject");
+            ModelState.Remove("UserId");
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(message);
+                    existing.Content = message.Content;
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MessageExists(message.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!MessageExists(message.Id)) return NotFound();
+                    else throw;
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Subject", new { id = existing.SubjectId });
             }
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Title", message.SubjectId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", message.UserId);
+
             return View(message);
         }
 

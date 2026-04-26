@@ -11,13 +11,21 @@
 
 <div class="row">
     <div class="col-md-8">
+        @* Info contextuelle *@
+        <div class="alert alert-light border mb-3">
+            <small class="text-muted">
+                Posté par <strong>@(Model.User?.UserName ?? "Inconnu")</strong>
+                le @Model.CreatedAt.ToString("dd MMM. yyyy 'à' HH'h'mm")
+            </small>
+        </div>
+
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="SubjectId" />
 
             <div class="form-group mb-3">
                 <label asp-for="Content" class="control-label">Contenu</label>
-                @* Textarea pour TinyMCE *@
                 <textarea asp-for="Content" id="messageEditContent" class="form-control" rows="6"></textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
@@ -32,11 +40,8 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
-    @* Intégration TinyMCE sur le champ Contenu *@
     <script src="https://cdn.tiny.cloud/1/2y3kz8ef292tu9hgci5w1gr7uqhonmx9li56zhgumnksp5hj/tinymce/8/tinymce.min.js"
             referrerpolicy="origin"></script>
     <script>

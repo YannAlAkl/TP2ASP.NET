@@ -51,47 +51,52 @@
         </div>
     </div>
 
-    <div class="post-container">
-        @{
-            // Index global du message (tient compte de la pagination)
-            int postIndex = (currentPage - 1) * pageSize + 1;
-        }
-        @foreach (var message in Model.Messages)
-        {
-            <div class="post-row">
+<div class="post-container">
+    @{
+        int postIndex = (currentPage - 1) * pageSize + 1;
+        var currentUserName = User.Identity?.Name;
+        var isAdmin = User.IsInRole("Admin");
+    }
+    @foreach (var message in Model.Messages)
+    {
+        var isOwner = currentUserName != null && message.User?.UserName == currentUserName;
 
-                <div class="post-author-sidebar">
-                    <div class="author-avatar">
-                        @(message.User?.UserName?.Substring(0, 2).ToUpper() ?? "??")
-                    </div>
-                    <h6 class="author-name">
-                        @(message.User?.UserName ?? "Inconnu")
-                    </h6>
-                    <span class="badge bg-success">Membre</span>
-                    <p class="author-stats">
-                        @(userPostCounts.GetValueOrDefault(message.UserId ?? "", 0)) messages
-                    </p>
+        <div class="post-row">
+            <div class="post-author-sidebar">
+                <div class="author-avatar">
+                    @(message.User?.UserName?.Substring(0, 2).ToUpper() ?? "??")
+                </div>
+                <h6 class="author-name">@(message.User?.UserName ?? "Inconnu")</h6>
+                <span class="badge bg-success">Membre</span>
+                <p class="author-stats">
+                    @(userPostCounts.GetValueOrDefault(message.UserId ?? "", 0)) messages
+                </p>
+            </div>
+
+            <div class="post-content-area">
+                <div class="post-date">
+                    #@postIndex — @message.CreatedAt.ToString("dd MMM. yyyy 'à' HH'h'mm")
+                </div>
+                <div class="post-text">
+                    @Html.Raw(message.Content)
                 </div>
 
-                <div class="post-content-area">
-                    <div class="post-date">
-                        #@postIndex — @message.CreatedAt.ToString("dd MMM. yyyy 'à' HH'h'mm")
-                    </div>
-                    <div class="post-text">
-                        @Html.Raw(message.Content)
-                    </div>
+                <div class="post-actions">
+                    <a asp-controller="Messages" asp-action="Like" asp-route-id="@message.Id" class="btn-card">
+                        👍 J'aime (@message.LikeCount)
+                    </a>
 
-                    <div class="post-actions">
-                        <button type="button" class="btn-card">Citer</button>
-                        <a asp-controller="Messages" asp-action="Like" asp-route-id="@message.Id" class="btn-card">
-                            👍 J'aime (@message.LikeCount)
-                        </a>
-                    </div>
+                    @if (isOwner || isAdmin)
+                    {
+                        <a asp-controller="Messages" asp-action="Edit" asp-route-id="@message.Id"
+                           class="btn-card">✏️ Modifier</a>
+                        <a asp-controller="Messages" asp-action="Delete" asp-route-id="@message.Id"
+                           class="btn-card text-danger">🗑️ Supprimer</a>
+                    }
                 </div>
             </div>
-            { postIndex++; }
-        }
-    </div{ postIndex++; }
+        </div>
+        postIndex++;
     }
 </div>
 

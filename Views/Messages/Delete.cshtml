@@ -1,51 +1,36 @@
 ﻿@model Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Models.Message
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Supprimer le message";
 }
 
-<h1>Delete</h1>
+<h1 class="text-danger">Supprimer le message</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Message</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Content)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Content)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsDeleted)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsDeleted)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Subject)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Subject.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Id)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
-</div>
+<h4>Êtes-vous sûr de vouloir supprimer ce message ?</h4>
+<hr />
+
+<dl class="row">
+    <dt class="col-sm-2">Auteur</dt>
+    <dd class="col-sm-10">@(Model.User?.UserName ?? "Inconnu")</dd>
+
+    <dt class="col-sm-2">Sujet</dt>
+    <dd class="col-sm-10">@(Model.Subject?.Title ?? "—")</dd>
+
+    <dt class="col-sm-2">Date</dt>
+    <dd class="col-sm-10">@Model.CreatedAt.ToString("dd MMM. yyyy 'à' HH'h'mm")</dd>
+
+    <dt class="col-sm-2">Contenu</dt>
+    <dd class="col-sm-10">
+        <div class="border rounded p-3 bg-light">
+            @Html.Raw(Model.Content)
+        </div>
+    </dd>
+</dl>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="SubjectId" />
+    <input type="submit" value="Supprimer" class="btn btn-danger" />
+    <a asp-action="Details" asp-controller="Subject" asp-route-id="@Model.SubjectId"
+       class="btn btn-secondary">Annuler</a>
+</form>

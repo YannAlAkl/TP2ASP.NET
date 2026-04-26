@@ -6,16 +6,19 @@
     ViewData["Title"] = "Accueil";
 }
 
-<h1>Accueil</h1>
+@* === HEADER BAR === *@
+<div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+    <h1 class="mb-0">Accueil</h1>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-controller="Category" asp-action="Create" class="btn btn-primary">
+            + Nouvelle catégorie
+        </a>
+    }
+</div>
 
-@if (User.IsInRole("Admin"))
-{
-    <p>
-        <a asp-controller="Category" asp-action="Create" class="btn btn-primary">Create New</a>
-    </p>
-}
-
-<div class="row">
+@* === CARDS === *@
+<div class="row justify-content-center">
     @foreach (var category in Model)
     {
         var subjects = category.Subjects.ToList();
@@ -23,13 +26,16 @@
             <div class="home-card">
                 @if (User.IsInRole("Admin"))
                 {
-                    <form asp-controller="Category" asp-action="Delete" asp-route-id="@category.Id"
-                          method="post"
-                          class="home-card-delete"
-                          onsubmit="return confirm('Supprimer cette catégorie ?');">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-                    </form>
+                    <div class="d-flex gap-2 justify-content-end mb-2">
+                        <a asp-controller="Category" asp-action="Edit" asp-route-id="@category.Id"
+                           class="btn btn-warning btn-sm">Modifier</a>
+                        <form asp-controller="Category" asp-action="Delete" asp-route-id="@category.Id"
+                              method="post"
+                              onsubmit="return confirm('Supprimer cette catégorie ?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                        </form>
+                    </div>
                 }
                 <div class="home-card-icon">
                     @if (!string.IsNullOrEmpty(category.Logo))
@@ -42,13 +48,20 @@
                     }
                 </div>
                 <a asp-controller="Category" asp-action="Details" asp-route-id="@category.Id"
-                   class="category-title-link">
+                       class="category-title-link">
                     <h5>@category.Name</h5>
                 </a>
                 <div>@Html.Raw(category.Description)</div>
                 @foreach (var subject in subjects)
                 {
-                    <h3>@subject.Title</h3>
+                    <a asp-controller="Subject" asp-action="Details" asp-route-id="@subject.Id"
+                           class="d-block text-decoration-none small py-1 border-bottom">
+                        @subject.Title
+                    </a>
+                }
+                @if (!subjects.Any())
+                {
+                    <p class="text-muted small fst-italic">Aucun sujet pour le moment</p>
                 }
                 <a asp-controller="Category" asp-action="Details" asp-route-id="@category.Id" class="btn-card">
                     Voir les discussions
@@ -58,14 +71,14 @@
     }
 </div>
 
-<nav aria-label="Pagination" class="mt-4">
-    <ul class="pagination justify-content-center">
-
+@* === PAGINATION === *@
+<nav aria-label="Pagination" class="d-flex flex-column align-items-center mt-4">
+    <ul class="pagination mb-2">
         <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
             <a class="page-link"
-               asp-controller="Home"
-               asp-action="Index"
-               asp-route-pageNumber="@(Model.PageIndex - 1)">
+                   asp-controller="Home"
+                   asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)">
                 &laquo; Précédent
             </a>
         </li>
@@ -76,22 +89,18 @@
                 <a class="page-link"
                    asp-controller="Home"
                    asp-action="Index"
-                   asp-route-pageNumber="@i">
-                    @i
-                </a>
+                   asp-route-pageNumber="@i">@i</a>
             </li>
         }
+
         <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
             <a class="page-link"
-               asp-controller="Home"
-               asp-action="Index"
-               asp-route-pageNumber="@(Model.PageIndex + 1)">
+                   asp-controller="Home"
+                   asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)">
                 Suivant &raquo;
             </a>
         </li>
-
     </ul>
-    <p class="text-center text-muted">
-        Page @Model.PageIndex sur @Model.TotalPages
-    </p>
+    <p class="text-muted small mb-0">Page @Model.PageIndex sur @Model.TotalPages</p>
 </nav>

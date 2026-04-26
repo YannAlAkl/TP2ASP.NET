@@ -95,18 +95,18 @@ namespace Yann_Al_Akl_WS1_TP2_Développement_Web_Serveur__1.Controllers
 
             return View(subject);
         }
-		        
-        
-		public IActionResult Create()
-		{
-			ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
-			ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-			return View();
-		}
 
-        
-        
-        
+
+        [Authorize]
+        public IActionResult Create()
+        {
+            ViewData["CategoryId"] = new SelectList(_context.Categories.Where(c => !c.IsDeleted), "Id", "Name");
+            return View();
+        }
+
+
+
+
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
